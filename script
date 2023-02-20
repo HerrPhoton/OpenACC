@@ -1,0 +1,28 @@
+#!/bin/bash
+
+RED="\e[31m"
+END="\e[0m"
+
+echo -e "${RED}double_gpu.c${END}"
+pgcc -Minfo=accel -fast -acc double_gpu.c -o double_gpu_out
+nvprof ./double_gpu_out
+
+echo -e "${RED}float_gpu.c${END}"
+pgcc -Minfo=accel -fast -acc float_gpu.c -o float_gpu_out
+nvprof ./float_gpu_out
+
+echo -e "${RED}double_gpu.c on multiple CPU cores${END}"
+pgcc -Minfo=accel -fast -acc=multicore double_gpu.c -o double_cpuM_out
+nvprof ./double_cpuM_out
+
+echo -e "${RED}float_cpu.c on multiple CPU cores${END}"
+pgcc -Minfo=accel -fast -acc=multicore float_gpu.c -o float_cpuM_out
+nvprof ./float_cpuM_out
+
+echo -e "${RED}flaot_cpu.c${END}"
+pgcc float_cpu.c -lm -o float_cpu_out
+./float_cpu_out
+
+echo -e "${RED}double_cpu.c${END}"
+pgcc double_cpu.c -lm -o double_cpu_out
+./double_cpu_out
